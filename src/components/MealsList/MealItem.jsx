@@ -12,7 +12,7 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 // screen
-import MealDetails from './MealDetails';
+import MealDetails from '../MealDetails';
 
 export default function MealItem({
   id,

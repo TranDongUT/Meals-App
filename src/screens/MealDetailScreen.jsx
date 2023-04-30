@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useContext, useLayoutEffect } from 'react';
 import {
   Button,
   Image,
@@ -10,6 +10,13 @@ import {
 
 // data
 import { MEALS } from '../../data/dummy-data';
+
+// store
+import { FavoritesContext } from '../store/context/Favorites-context';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFavorite, removeFavorite } from '../store/redux/slices/favorites';
+
+// component
 import MealDetails from '../components/MealDetails';
 import Subtitle from '../components/MealDetail/Subtitle';
 import List from '../components/MealDetail/List';
@@ -18,19 +25,38 @@ import IconButton from '../components/IconButton';
 export default function MealDetailScreen({ route, navigation }) {
   const mealId = route.params.mealId;
 
+  // context
+  const favoriteMealCtx = useContext(FavoritesContext);
+
+  // redux
+  const { ids: favoriteMealIds } = useSelector((state) => state.favoriteMeals);
+  const dispatch = useDispatch();
+
   const selectedMeal = MEALS.find((meal) => meal.id === mealId);
 
-  const handlePressStarIcon = () => {
-    console.log('pressed');
+  // const isFavorite = favoriteMealCtx.ids.includes(mealId);
+  const isFavorite = favoriteMealIds.includes(mealId);
+  const handleChangeFavoriteStatus = () => {
+    if (isFavorite) {
+      // favoriteMealCtx.removeFavorite(mealId);
+      dispatch(removeFavorite({ id: mealId }));
+    } else {
+      // favoriteMealCtx.addFavorite(mealId);
+      dispatch(addFavorite({ id: mealId }));
+    }
   };
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <IconButton icon='star' color='#fff' onPress={handlePressStarIcon} />
+        <IconButton
+          icon={isFavorite ? 'star' : 'star-outline'}
+          color='#fff'
+          onPress={handleChangeFavoriteStatus}
+        />
       ),
     });
-  }, [navigation]);
+  }, [navigation, handleChangeFavoriteStatus]);
 
   return (
     <ScrollView style={styles.rootContainer}>
